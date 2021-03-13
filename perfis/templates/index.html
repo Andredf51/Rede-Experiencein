@@ -1,0 +1,78 @@
+<!--Página herda de base.html-->
+{% extends "base.html" %}
+
+<!--Indicar o conteúdo de index deve ser dentro do bloco-->
+{% block body %}
+<div class="col-lg-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<strong>Todos os Perfis</strong>
+		</div>
+		{% if perfis %}
+		<ul>
+			<!--Lista em HTML-->
+			{% for perfil in perfis %}
+			<li>
+				<a href="{% url 'exibir' perfil.id %}">{{perfil.nome}}</a> / {{perfil.email}}
+				<!--Aqui pode add filtros-->
+				<p>{{ perfil.nome|upper}} </p>
+			</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+		<p>Nenhum perfil encontrado</p>
+		{% endif %}
+	</div>
+
+	<!-- bloco novo de código que exibe os convites -->
+	<div class="panel panel-default">
+		<!--Tag with-->
+		{% with total_de_convites=perfil_logado.convites_recebidos.count %}
+			{% if total_de_convites %}
+				<div class="panel-heading">
+					<!--tag para contar convites-->
+					<strong>Você tem {{ total_de_convites }} convite{{ total_de_convites|pluralize}} aguardando aprovação</strong>
+				</div>
+				<ul class="list-group">
+					{% for convite in perfil_logado.convites_recebidos.all %}
+						<li class="list-group-item">
+							{{ convite.solicitante.nome }}
+							<a href="{% url 'aceitar' convite.id %}" class="pull-right">aceitar</a>
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<div class="panel-body">
+					<p>Nenhum convite recebido :(</p>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</div>
+
+	<!-- fim do bloco convites -->
+
+	<!-- Novo painel contados do perfil-->
+	<div class="panel panel-default">
+		{% with total_de_contatos=perfil_logado.contatos.count %}
+			{% if total_de_contatos %}
+				<div class="panel-heading">
+					<strong>Você tem {{ total_de_contatos }} contato{{ total_de_contatos|pluralize}}</strong>
+				</div>
+				<ul class="list-group">
+					{% for contato in perfil_logado.contatos.all %}
+						<li class="list-group-item">
+							<a href="{% url 'exibir' contato.id %}">{{contato.nome}}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<div class="panel-body">
+					<p>Você não possui contatos no momento :(</p>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</div>
+	<!-- Fim painel contados do perfil-->
+
+</div>
+{% endblock %}
